@@ -48,6 +48,20 @@ INSTALLED_APPS = [
 
     # Local applications
     "apps.accounts.apps.AccountsConfig",
+    "apps.analytics.apps.AnalyticsConfig",
+    "apps.audit.apps.AuditConfig",
+    "apps.catalog.apps.CatalogConfig",
+    "apps.colors.apps.ColorsConfig",
+    "apps.customers.apps.CustomersConfig",
+    "apps.deliveries.apps.DeliveriesConfig",
+    "apps.expenses.apps.ExpensesConfig",
+    "apps.inventory.apps.InventoryConfig",
+    "apps.notifications.apps.NotificationsConfig",
+    "apps.pricing.apps.PricingConfig",
+    "apps.payments.apps.PaymentsConfig",
+    "apps.suppliers.apps.SuppliersConfig",
+    "apps.procurement.apps.ProcurementConfig",
+    "apps.sales.apps.SalesConfig",
 ]
 
 MIDDLEWARE = [

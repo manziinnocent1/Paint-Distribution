@@ -36,6 +36,84 @@ urlpatterns = [
         "api/v1/accounts/",
         include("apps.accounts.urls"),
     ),
+    
+    # Analytics
+    path(
+    "api/v1/analytics/",
+    include("apps.analytics.urls"),
+    ),
+    
+    # Audit
+    
+    path(
+        "api/v1/audit/",
+        include("apps.audit.urls"),
+    ),
+    
+    # Catalog
+
+    path(
+        "api/v1/catalog/",
+        include("apps.catalog.urls"),
+    ),
+    
+    # Colors
+    
+    path(
+    "api/v1/colors/",
+    include("apps.colors.urls"),
+    ),
+    
+    # Customers
+
+   path(
+    "api/v1/customers/",
+    include("apps.customers.urls"),
+    ),
+   
+    # Deliveries
+
+   path(
+    "api/v1/deliveries/",
+    include("apps.deliveries.urls"),
+    ),
+   
+   path(
+    "api/v1/expenses/",
+    include("apps.expenses.urls"),
+),
+
+path(
+    "api/v1/inventory/",
+    include("apps.inventory.urls"),
+),
+
+path(
+        "api/v1/notifications/",
+        include("apps.notifications.urls"),
+    ),
+    path(
+        "api/v1/pricing/",
+        include("apps.pricing.urls"),
+    ),
+    path(
+        "api/v1/payments/",
+        include("apps.payments.urls"),
+    ),
+    
+    path(
+    "api/v1/",
+    include("apps.suppliers.urls"),
+),
+    path(
+    "api/v1/",
+    include("apps.procurement.urls"),
+),
+
+path(
+    "api/v1/",
+    include("apps.sales.urls"),
+),
 
     # API documentation
     path(
