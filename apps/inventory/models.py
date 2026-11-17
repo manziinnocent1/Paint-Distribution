@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 
 from django.conf import settings
 from django.core.validators import MinValueValidator
@@ -126,7 +127,7 @@ class StockLevel(UUIDTimestampModel):
         indexes = [
             models.Index(
                 fields=["warehouse", "product_variant"],
-                name="inventory_warehouse_variant_idx",
+                name="inv_warehouse_variant_idx",
             ),
         ]
 
@@ -192,7 +193,7 @@ class StockMovement(UUIDTimestampModel):
     quantity = models.DecimalField(
         max_digits=14,
         decimal_places=3,
-        validators=[MinValueValidator(0.001)],
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     unit_cost = models.DecimalField(

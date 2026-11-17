@@ -305,10 +305,10 @@ class SaleCreateSerializer(serializers.Serializer):
         ),
     )
 
-    channel = serializers.ChoiceField(
-        choices=Sale.Channel.choices,
-        default=Sale.Channel.DIRECT,
-    )
+    sales_channel = serializers.ChoiceField(
+    choices=Sale.SalesChannel.choices,
+    default=Sale.SalesChannel.DIRECT,
+)
 
     sale_date = serializers.DateField(
         required=False,

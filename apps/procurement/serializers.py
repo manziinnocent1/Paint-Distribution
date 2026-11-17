@@ -15,6 +15,28 @@ from .models import (
 )
 
 
+# ---------------------------------------------------------------------------
+# Lazy related fields (avoid circular imports between apps)
+# ---------------------------------------------------------------------------
+
+class ActiveSupplierField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        from apps.suppliers.models import Supplier
+
+        return Supplier.objects.filter(status=Supplier.Status.ACTIVE)
+
+
+class ActiveWarehouseField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        from apps.inventory.models import Warehouse
+
+        return Warehouse.objects.filter(status=Warehouse.Status.ACTIVE)
+
+
+# ---------------------------------------------------------------------------
+# Purchase requests
+# ---------------------------------------------------------------------------
+
 class PurchaseRequestItemSerializer(serializers.ModelSerializer):
 
     product_name = serializers.CharField(
@@ -126,6 +148,10 @@ class PurchaseRequestCreateSerializer(serializers.Serializer):
         return request
 
 
+# ---------------------------------------------------------------------------
+# Purchase orders
+# ---------------------------------------------------------------------------
+
 class PurchaseOrderItemSerializer(serializers.ModelSerializer):
 
     product_name = serializers.CharField(
@@ -226,13 +252,9 @@ class PurchaseOrderItemCreateSerializer(serializers.Serializer):
 
 class PurchaseOrderCreateSerializer(serializers.Serializer):
 
-    supplier = serializers.PrimaryKeyRelatedField(
-        queryset=None,
-    )
+    supplier = ActiveSupplierField()
 
-    warehouse = serializers.PrimaryKeyRelatedField(
-        queryset=None,
-    )
+    warehouse = ActiveWarehouseField()
 
     purchase_request = serializers.PrimaryKeyRelatedField(
         queryset=PurchaseRequest.objects.all(),
@@ -262,20 +284,6 @@ class PurchaseOrderCreateSerializer(serializers.Serializer):
         allow_empty=False,
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        from apps.suppliers.models import Supplier
-        from apps.inventory.models import Warehouse
-
-        self.fields["supplier"].queryset = Supplier.objects.filter(
-            status=Supplier.Status.ACTIVE,
-        )
-
-        self.fields["warehouse"].queryset = Warehouse.objects.filter(
-            status=Warehouse.Status.ACTIVE,
-        )
-
     def validate(self, attrs):
         delivery_date = attrs.get("expected_delivery_date")
         order_date = attrs.get("order_date")
@@ -288,6 +296,10 @@ class PurchaseOrderCreateSerializer(serializers.Serializer):
 
         return attrs
 
+
+# ---------------------------------------------------------------------------
+# Goods receipts
+# ---------------------------------------------------------------------------
 
 class GoodsReceiptItemSerializer(serializers.ModelSerializer):
 

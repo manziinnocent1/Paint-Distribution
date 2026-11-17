@@ -253,3 +253,32 @@ X_FRAME_OPTIONS = "DENY"
 SESSION_COOKIE_HTTPONLY = True
 
 CSRF_COOKIE_HTTPONLY = True
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Paint Distribution API",
+    "DESCRIPTION": "Backend API for the Color Paint Distribution system.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+
+    # Skip /api/v1/ when deriving the group name from the URL
+    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]+",
+
+    # Optional: control the display order and add descriptions
+    "TAGS": [
+        {"name": "accounts", "description": "Users, profiles and passwords"},
+        {"name": "analytics", "description": "Reports and dashboards"},
+        {"name": "audit", "description": "Audit logs"},
+        {"name": "catalog", "description": "Products, variants, categories and brands"},
+        {"name": "colors", "description": "Colour management and mixing"},
+        {"name": "customers", "description": "Customers and addresses"},
+        {"name": "deliveries", "description": "Deliveries and tracking"},
+        {"name": "expenses", "description": "Expenses"},
+        {"name": "inventory", "description": "Warehouses, stock levels and movements"},
+        {"name": "notifications", "description": "Notifications"},
+        {"name": "pricing", "description": "Pricing rules"},
+        {"name": "payments", "description": "Payments"},
+        {"name": "suppliers", "description": "Suppliers"},
+        # {"name": "procurement", "description": "Purchase requests, orders and goods receipts"},
+        {"name": "sales", "description": "Quotations, sales and returns"},
+    ],
+}

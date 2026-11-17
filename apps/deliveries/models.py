@@ -167,7 +167,7 @@ class Delivery(UUIDTimestampModel):
             ),
             models.Index(
                 fields=["customer", "created_at"],
-                name="deliveries_customer_created_idx",
+                name="deliv_customer_created_idx",
             ),
         ]
 

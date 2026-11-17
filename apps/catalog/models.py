@@ -232,7 +232,7 @@ class Product(UUIDTimeStampedModel):
         indexes = [
             models.Index(
                 fields=["product_type", "status"],
-                name="catalog_product_type_status_idx",
+                name="cat_product_type_status_idx",
             ),
             models.Index(
                 fields=["category", "status"],
