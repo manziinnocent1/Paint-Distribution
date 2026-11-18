@@ -9,48 +9,53 @@ from apps.audit.serializers import AuditLogSerializer
 
 
 class AuditLogSerializerTests(APISimpleTestCase):
-    def setUp(self):
-        self.actor_id = uuid4()
-        self.audit_log_id = uuid4()
-        self.content_type_id = 1
+    
+ def setUp(self):
+    self.actor_id = uuid4()
+    self.audit_log_id = uuid4()
+    self.content_type_id = 1
 
-        self.actor = SimpleNamespace(
-            id=self.actor_id,
-            email="admin@example.com",
-        )
+    self.actor = SimpleNamespace(
+        id=self.actor_id,
+        pk=self.actor_id,
+        email="admin@example.com",
+    )
 
-        self.content_type = SimpleNamespace(
-            id=self.content_type_id,
-            model="customer",
-        )
+    self.content_type = SimpleNamespace(
+        id=self.content_type_id,
+        pk=self.content_type_id,
+        model="customer",
+    )
 
-        self.created_at = datetime(
-            2026, 11, 17, 10, 30, 0,
-            tzinfo=timezone.utc,
-        )
+    self.created_at = datetime(
+        2026, 11, 17, 10, 30, 0,
+        tzinfo=timezone.utc,
+    )
 
-        self.audit_log = SimpleNamespace(
-            id=self.audit_log_id,
-            actor=self.actor,
-            action="CREATE",
-            description="Created a new customer.",
-            content_type=self.content_type,
-            object_id="customer-123",
-            object_repr="Customer: Example Company",
-            changes={
-                "name": {
-                    "old": None,
-                    "new": "Example Company",
-                }
-            },
-            metadata={
-                "source": "admin_panel",
-            },
-            ip_address="192.168.1.10",
-            user_agent="Mozilla/5.0",
-            created_at=self.created_at,
-            get_action_display=lambda: "Create",
-        )
+    self.audit_log = SimpleNamespace(
+        id=self.audit_log_id,
+        pk=self.audit_log_id,
+        actor=self.actor,
+        action="CREATE",
+        description="Created a new customer.",
+        content_type=self.content_type,
+        object_id="customer-123",
+        object_repr="Customer: Example Company",
+        changes={
+            "name": {
+                "old": None,
+                "new": "Example Company",
+            }
+        },
+        metadata={
+            "source": "admin_panel",
+        },
+        ip_address="192.168.1.10",
+        user_agent="Mozilla/5.0",
+        created_at=self.created_at,
+        get_action_display=lambda: "Create",
+    )
+
 
     def test_serializer_returns_expected_fields(self):
         serializer = AuditLogSerializer(self.audit_log)

@@ -1,8 +1,7 @@
-
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
-from rest_framework.test import APISimpleTestCase
+from rest_framework.test import APITestCase
 
 from apps.colors.models import (
     ColorFamily,
@@ -22,7 +21,7 @@ from apps.colors.serializers import (
 User = get_user_model()
 
 
-class ColorFamilySerializerTests(APISimpleTestCase):
+class ColorFamilySerializerTests(APITestCase):
 
     def setUp(self):
         self.family = ColorFamily(
@@ -111,7 +110,7 @@ class ColorFamilySerializerTests(APISimpleTestCase):
         self.assertIn("name", serializer.errors)
 
 
-class ColorSerializerTests(APISimpleTestCase):
+class ColorSerializerTests(APITestCase):
 
     def setUp(self):
         self.user = User(
@@ -352,20 +351,20 @@ class ColorSerializerTests(APISimpleTestCase):
         self.assertIn("color_type", serializer.errors)
 
 
-class ColorFormulaIngredientSerializerTests(APISimpleTestCase):
+class ColorFormulaIngredientSerializerTests(APITestCase):
 
     def setUp(self):
-        self.family = ColorFamily(
+        self.family = ColorFamily.objects.create(
             name="Neutral Colours",
         )
 
-        self.color = Color(
+        self.color = Color.objects.create(
             name="Pure White",
             code="CLR-WHT-001",
             family=self.family,
         )
 
-        self.formula = ColorFormula(
+        self.formula = ColorFormula.objects.create(
             color=self.color,
             name="Pure White Formula",
             version=1,
@@ -373,7 +372,7 @@ class ColorFormulaIngredientSerializerTests(APISimpleTestCase):
             batch_unit="litre",
         )
 
-        self.ingredient = ColorFormulaIngredient(
+        self.ingredient = ColorFormulaIngredient.objects.create(
             formula=self.formula,
             ingredient_name="White pigment",
             ingredient_code="PIG-WHT-001",
@@ -499,20 +498,20 @@ class ColorFormulaIngredientSerializerTests(APISimpleTestCase):
         )
 
 
-class ColorFormulaSerializerTests(APISimpleTestCase):
+class ColorFormulaSerializerTests(APITestCase):
 
     def setUp(self):
-        self.family = ColorFamily(
+        self.family = ColorFamily.objects.create(
             name="Neutral Colours",
         )
 
-        self.color = Color(
+        self.color = Color.objects.create(
             name="Pure White",
             code="CLR-WHT-001",
             family=self.family,
         )
 
-        self.formula = ColorFormula(
+        self.formula = ColorFormula.objects.create(
             color=self.color,
             name="Pure White Formula",
             version=1,
@@ -522,7 +521,7 @@ class ColorFormulaSerializerTests(APISimpleTestCase):
             is_active=True,
         )
 
-        self.ingredient = ColorFormulaIngredient(
+        self.ingredient = ColorFormulaIngredient.objects.create(
             formula=self.formula,
             ingredient_name="White pigment",
             ingredient_code="PIG-WHT-001",
@@ -597,8 +596,6 @@ class ColorFormulaSerializerTests(APISimpleTestCase):
         )
 
     def test_serializes_nested_ingredients(self):
-        self.formula.ingredients = [self.ingredient]
-
         serializer = ColorFormulaSerializer(self.formula)
 
         ingredients = serializer.data["ingredients"]

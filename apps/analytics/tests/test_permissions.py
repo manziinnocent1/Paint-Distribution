@@ -2,6 +2,7 @@
 import pytest
 
 from rest_framework.test import APIRequestFactory, force_authenticate
+from rest_framework.views import APIView
 
 from apps.accounts.models import User
 
@@ -14,6 +15,27 @@ from apps.analytics.permissions import (
 @pytest.mark.django_db
 class TestAnalyticsPermissions:
 
+    def setup_method(self):
+        self.factory = APIRequestFactory()
+        self.view = APIView()
+
+    def get_authenticated_request(self, user):
+
+        django_request = self.factory.get(
+            "/api/v1/analytics/snapshots/"
+        )
+
+        force_authenticate(
+            django_request,
+            user=user,
+        )
+
+        request = self.view.initialize_request(
+            django_request
+        )
+
+        return request
+
     def test_admin_can_view_analytics(self):
 
         user = User.objects.create_superuser(
@@ -23,15 +45,11 @@ class TestAnalyticsPermissions:
             last_name="Admin",
         )
 
-        request = APIRequestFactory().get(
-            "/api/v1/analytics/snapshots/"
-        )
-
-        force_authenticate(request, user=user)
+        request = self.get_authenticated_request(user)
 
         assert IsAnalyticsViewer().has_permission(
             request,
-            None,
+            self.view,
         )
 
     def test_manager_can_view_analytics(self):
@@ -44,15 +62,11 @@ class TestAnalyticsPermissions:
             role=User.Role.MANAGER,
         )
 
-        request = APIRequestFactory().get(
-            "/api/v1/analytics/snapshots/"
-        )
-
-        force_authenticate(request, user=user)
+        request = self.get_authenticated_request(user)
 
         assert IsAnalyticsViewer().has_permission(
             request,
-            None,
+            self.view,
         )
 
     def test_accountant_can_view_analytics(self):
@@ -65,15 +79,11 @@ class TestAnalyticsPermissions:
             role=User.Role.ACCOUNTANT,
         )
 
-        request = APIRequestFactory().get(
-            "/api/v1/analytics/snapshots/"
-        )
-
-        force_authenticate(request, user=user)
+        request = self.get_authenticated_request(user)
 
         assert IsAnalyticsViewer().has_permission(
             request,
-            None,
+            self.view,
         )
 
     def test_salesperson_cannot_view_financial_analytics(self):
@@ -86,15 +96,11 @@ class TestAnalyticsPermissions:
             role=User.Role.SALES_PERSON,
         )
 
-        request = APIRequestFactory().get(
-            "/api/v1/analytics/snapshots/"
-        )
-
-        force_authenticate(request, user=user)
+        request = self.get_authenticated_request(user)
 
         assert not IsAnalyticsViewer().has_permission(
             request,
-            None,
+            self.view,
         )
 
     def test_accountant_cannot_manage_analytics(self):
@@ -107,13 +113,9 @@ class TestAnalyticsPermissions:
             role=User.Role.ACCOUNTANT,
         )
 
-        request = APIRequestFactory().get(
-            "/api/v1/analytics/snapshots/"
-        )
-
-        force_authenticate(request, user=user)
+        request = self.get_authenticated_request(user)
 
         assert not IsAnalyticsManager().has_permission(
             request,
-            None,
+            self.view,
         )

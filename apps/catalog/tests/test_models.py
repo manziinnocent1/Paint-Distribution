@@ -68,4 +68,4 @@ def test_create_paint_product_and_variant():
 
     assert product.variants.count() == 1
     assert variant.volume_ml == 20000
-    assert variant.selling_price == 18000
+    assert variant.selling_price == "18000.00"
