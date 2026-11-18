@@ -1,5 +1,6 @@
-
 import os
+import sys
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -7,6 +8,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
+
+TESTING = "pytest" in sys.modules
 
 
 def env_bool(name, default=False):
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
     # Third-party applications
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "django_filters",
     "corsheaders",
     "drf_spectacular",
@@ -208,8 +212,6 @@ REST_FRAMEWORK = {
 
 # JWT configuration
 
-from datetime import timedelta
-
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -217,10 +219,6 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
-
-INSTALLED_APPS += [
-    "rest_framework_simplejwt.token_blacklist",
-]
 
 # API documentation
 
@@ -233,6 +231,27 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
+
+    # Skip /api/v1/ when deriving the group name from the URL
+    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]+",
+
+    "TAGS": [
+        {"name": "accounts", "description": "Users, profiles and passwords"},
+        {"name": "analytics", "description": "Reports and dashboards"},
+        {"name": "audit", "description": "Audit logs"},
+        {"name": "catalog", "description": "Products, variants, categories and brands"},
+        {"name": "colors", "description": "Colour management and mixing"},
+        {"name": "customers", "description": "Customers and addresses"},
+        {"name": "deliveries", "description": "Deliveries and tracking"},
+        {"name": "expenses", "description": "Expenses"},
+        {"name": "inventory", "description": "Warehouses, stock levels and movements"},
+        {"name": "notifications", "description": "Notifications"},
+        {"name": "pricing", "description": "Pricing rules"},
+        {"name": "payments", "description": "Payments"},
+        {"name": "suppliers", "description": "Suppliers"},
+        {"name": "procurement", "description": "Purchase requests, orders and goods receipts"},
+        {"name": "sales", "description": "Quotations, sales and returns"},
+    ],
 }
 
 # React frontend configuration
@@ -254,31 +273,11 @@ SESSION_COOKIE_HTTPONLY = True
 
 CSRF_COOKIE_HTTPONLY = True
 
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Paint Distribution API",
-    "DESCRIPTION": "Backend API for the Color Paint Distribution system.",
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
+# Test overrides (only active when running under pytest)
 
-    # Skip /api/v1/ when deriving the group name from the URL
-    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]+",
+if TESTING:
+    # Avoid 429 responses in test suites that make many requests
+    REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = []
 
-    # Optional: control the display order and add descriptions
-    "TAGS": [
-        {"name": "accounts", "description": "Users, profiles and passwords"},
-        {"name": "analytics", "description": "Reports and dashboards"},
-        {"name": "audit", "description": "Audit logs"},
-        {"name": "catalog", "description": "Products, variants, categories and brands"},
-        {"name": "colors", "description": "Colour management and mixing"},
-        {"name": "customers", "description": "Customers and addresses"},
-        {"name": "deliveries", "description": "Deliveries and tracking"},
-        {"name": "expenses", "description": "Expenses"},
-        {"name": "inventory", "description": "Warehouses, stock levels and movements"},
-        {"name": "notifications", "description": "Notifications"},
-        {"name": "pricing", "description": "Pricing rules"},
-        {"name": "payments", "description": "Payments"},
-        {"name": "suppliers", "description": "Suppliers"},
-        # {"name": "procurement", "description": "Purchase requests, orders and goods receipts"},
-        {"name": "sales", "description": "Quotations, sales and returns"},
-    ],
-}
+    # Much faster than the default password hasher
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
