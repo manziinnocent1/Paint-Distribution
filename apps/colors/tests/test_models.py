@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import pytest
 
 from apps.colors.models import (
@@ -53,6 +55,9 @@ def test_create_color_formula_and_ingredient():
         unit="ml",
     )
 
+    # Reload so the value is a Decimal from the DB, not the raw string
+    ingredient.refresh_from_db()
+
     assert formula.ingredients.count() == 1
     assert ingredient.formula == formula
-    assert ingredient.quantity == 150
+    assert ingredient.quantity == Decimal("150")

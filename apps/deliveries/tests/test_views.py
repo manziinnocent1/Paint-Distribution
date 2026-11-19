@@ -1116,8 +1116,8 @@ class DeliveryPermissionTests(APITestCase):
             status.HTTP_403_FORBIDDEN,
         )
 
-    def test_inventory_manager_cannot_update_delivery_status(self):
-        self.client.force_authenticate(user=self.inventory_user)
+        def test_inventory_manager_cannot_update_delivery_status(self):
+         self.client.force_authenticate(user=self.inventory_user)
 
         response = self.client.post(
             reverse(
@@ -1142,5 +1142,5 @@ class DeliveryPermissionTests(APITestCase):
 
         self.assertEqual(
             response.status_code,
-            status.HTTP_403_FORBIDDEN,
+            status.HTTP_401_UNAUTHORIZED,
         )

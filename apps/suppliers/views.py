@@ -1,7 +1,9 @@
+
 import uuid
 
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -21,8 +23,10 @@ from .serializers import (
 )
 
 from .permissions import SupplierPermission
+
 from .filters import (
     SupplierFilter,
+    SupplierContactFilter,
     SupplierProductFilter,
 )
 
@@ -68,7 +72,7 @@ class SupplierViewSet(viewsets.ModelViewSet):
         ).prefetch_related(
             "contacts",
             "products",
-        )
+        ).order_by("name", "pk")
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -85,7 +89,10 @@ class SupplierViewSet(viewsets.ModelViewSet):
     def contacts(self, request, pk=None):
         supplier = self.get_object()
 
-        contacts = supplier.contacts.all()
+        contacts = supplier.contacts.all().order_by(
+            "full_name",
+            "pk",
+        )
 
         serializer = SupplierContactSerializer(
             contacts,
@@ -105,7 +112,7 @@ class SupplierViewSet(viewsets.ModelViewSet):
         products = supplier.products.select_related(
             "product_variant",
             "product_variant__product",
-        )
+        ).order_by("pk")
 
         serializer = SupplierProductSerializer(
             products,
@@ -165,12 +172,10 @@ class SupplierContactViewSet(viewsets.ModelViewSet):
     filter_backends = [
         DjangoFilterBackend,
         SearchFilter,
+        OrderingFilter,
     ]
 
-    filterset_fields = [
-        "supplier",
-        "is_primary",
-    ]
+    filterset_class = SupplierContactFilter
 
     search_fields = [
         "full_name",
@@ -179,10 +184,26 @@ class SupplierContactViewSet(viewsets.ModelViewSet):
         "job_title",
     ]
 
+    ordering_fields = [
+        "full_name",
+        "created_at",
+    ]
+
+    ordering = ["full_name", "pk"]
+
     def get_queryset(self):
-        return SupplierContact.objects.select_related(
+        queryset = SupplierContact.objects.select_related(
             "supplier",
         )
+
+        supplier_id = self.request.query_params.get("supplier")
+
+        if supplier_id:
+            queryset = queryset.filter(
+                supplier_id=supplier_id,
+            )
+
+        return queryset.order_by("full_name", "pk")
 
 
 class SupplierProductViewSet(viewsets.ModelViewSet):
@@ -210,9 +231,20 @@ class SupplierProductViewSet(viewsets.ModelViewSet):
         "created_at",
     ]
 
+    ordering = ["created_at", "pk"]
+
     def get_queryset(self):
-        return SupplierProduct.objects.select_related(
+        queryset = SupplierProduct.objects.select_related(
             "supplier",
             "product_variant",
             "product_variant__product",
         )
+
+        supplier_id = self.request.query_params.get("supplier")
+
+        if supplier_id:
+            queryset = queryset.filter(
+                supplier_id=supplier_id,
+            )
+
+        return queryset.order_by("created_at", "pk")

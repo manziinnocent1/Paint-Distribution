@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
@@ -40,6 +41,17 @@ from .services import (
 def generate_request_number():
     import uuid
     return f"PR-{uuid.uuid4().hex[:10].upper()}"
+
+
+def run_service(function, **kwargs):
+    """
+    Call a service function and turn Django validation errors into
+    DRF validation errors, so the API answers 400 instead of 500.
+    """
+    try:
+        return function(**kwargs)
+    except DjangoValidationError as exc:
+        raise ValidationError(exc.messages)
 
 
 class PurchaseRequestViewSet(viewsets.ModelViewSet):
@@ -89,11 +101,28 @@ class PurchaseRequestViewSet(viewsets.ModelViewSet):
         context["request"] = self.request
         return context
 
-    @transaction.atomic
-    def perform_create(self, serializer):
-        serializer.save(
-            request_number=generate_request_number(),
-            requested_by=self.request.user,
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # requested_by is set inside PurchaseRequestCreateSerializer.create()
+        # from the request in the context, so it must NOT be passed here too
+        # (that caused: got multiple values for keyword argument).
+        with transaction.atomic():
+            purchase_request = serializer.save(
+                request_number=generate_request_number(),
+            )
+
+        # Respond with the full read serializer so the client gets
+        # request_number, status, items and so on.
+        output = PurchaseRequestSerializer(
+            purchase_request,
+            context=self.get_serializer_context(),
+        )
+
+        return Response(
+            output.data,
+            status=status.HTTP_201_CREATED,
         )
 
     @action(detail=True, methods=["post"])
@@ -247,7 +276,8 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         validated_data = serializer.validated_data
         items = validated_data.pop("items")
 
-        purchase_order = create_purchase_order(
+        purchase_order = run_service(
+            create_purchase_order,
             data=validated_data,
             items=items,
             user=request.user,
@@ -289,7 +319,10 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def approve(self, request, pk=None):
-        order = approve_purchase_order(
+        # The service raises a Django ValidationError for invalid states
+        # (not submitted, no items); run_service converts it into a 400.
+        order = run_service(
+            approve_purchase_order,
             order_id=pk,
             user=request.user,
         )
@@ -318,7 +351,8 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         receipt_items = data.pop("items")
         data.pop("purchase_order")
 
-        receipt = receive_purchase_order(
+        receipt = run_service(
+            receive_purchase_order,
             order_id=pk,
             receipt_items=receipt_items,
             user=request.user,

@@ -1,4 +1,3 @@
-
 from decimal import Decimal
 
 from django.urls import reverse
@@ -8,6 +7,18 @@ from rest_framework.test import APITestCase
 from apps.accounts.models import User
 from apps.customers.models import Customer
 from apps.payments.models import Payment, PaymentRefund
+
+
+def results_of(response):
+    """
+    Return the list of items from a list response, whether or not the
+    endpoint is paginated. A paginated response is a dict with
+    count/next/previous/results, which is why len(response.data) was 4.
+    """
+    data = response.data
+    if isinstance(data, dict) and "results" in data:
+        return data["results"]
+    return data
 
 
 class PaymentViewSetTests(APITestCase):
@@ -88,7 +99,7 @@ class PaymentViewSetTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(results_of(response)), 1)
 
     def test_salesperson_can_list_payments(self):
         self.client.force_authenticate(user=self.salesperson)
@@ -648,7 +659,7 @@ class PaymentRefundViewSetTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(results_of(response)), 1)
 
     def test_salesperson_cannot_list_refunds(self):
         self.client.force_authenticate(user=self.salesperson)

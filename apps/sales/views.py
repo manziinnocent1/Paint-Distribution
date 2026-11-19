@@ -1,5 +1,5 @@
-from decimal import Decimal
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from .models import (
     SalesQuotation,
     Sale,
+    SaleItem,
     SalesReturn,
 )
 
@@ -35,12 +36,14 @@ from .filters import (
 
 from .services import (
     create_sale,
+    confirm_sale,
     fulfill_sale_item,
 )
 
 
 def generate_quotation_number():
     import uuid
+
     return f"QUO-{uuid.uuid4().hex[:10].upper()}"
 
 
@@ -92,7 +95,6 @@ class SalesQuotationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(
             quotation_number=generate_quotation_number(),
-            created_by=self.request.user,
         )
 
     @action(detail=True, methods=["post"])
@@ -115,7 +117,8 @@ class SalesQuotationViewSet(viewsets.ModelViewSet):
             )
 
         return Response(
-            SalesQuotationSerializer(quotation).data
+            SalesQuotationSerializer(quotation).data,
+            status=status.HTTP_200_OK,
         )
 
     @action(detail=True, methods=["post"])
@@ -148,7 +151,8 @@ class SalesQuotationViewSet(viewsets.ModelViewSet):
             )
 
         return Response(
-            SalesQuotationSerializer(quotation).data
+            SalesQuotationSerializer(quotation).data,
+            status=status.HTTP_200_OK,
         )
 
     @action(detail=True, methods=["post"])
@@ -171,7 +175,8 @@ class SalesQuotationViewSet(viewsets.ModelViewSet):
             )
 
         return Response(
-            SalesQuotationSerializer(quotation).data
+            SalesQuotationSerializer(quotation).data,
+            status=status.HTTP_200_OK,
         )
 
 
@@ -260,15 +265,27 @@ class SaleViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def confirm(self, request, pk=None):
-        from .services import confirm_sale
+        try:
+            sale = confirm_sale(
+                sale_id=pk,
+                user=request.user,
+            )
 
-        sale = confirm_sale(
-            sale_id=pk,
-            user=request.user,
-        )
+        except DjangoValidationError as exc:
+            detail = (
+                exc.message_dict
+                if hasattr(exc, "message_dict")
+                else exc.messages
+            )
+
+            raise ValidationError(detail) from exc
 
         return Response(
-            SaleSerializer(sale).data
+            SaleSerializer(
+                sale,
+                context=self.get_serializer_context(),
+            ).data,
+            status=status.HTTP_200_OK,
         )
 
     @action(
@@ -304,8 +321,6 @@ class SaleViewSet(viewsets.ModelViewSet):
                 "quantity": "Quantity must be greater than zero."
             })
 
-        from .models import SaleItem
-
         sale_item = SaleItem.objects.filter(
             pk=sale_item_id,
             sale=sale,
@@ -316,7 +331,7 @@ class SaleViewSet(viewsets.ModelViewSet):
                 "sale_item": "This item does not belong to this sale."
             })
 
-        fulfilled_item = fulfill_sale_item(
+        fulfill_sale_item(
             sale_item_id=sale_item.pk,
             quantity=quantity,
             user=request.user,
@@ -326,8 +341,11 @@ class SaleViewSet(viewsets.ModelViewSet):
 
         return Response({
             "message": "Sale item fulfilled successfully.",
-            "sale": SaleSerializer(sale).data,
-        })
+            "sale": SaleSerializer(
+                sale,
+                context=self.get_serializer_context(),
+            ).data,
+        }, status=status.HTTP_200_OK)
 
 
 class SalesReturnViewSet(viewsets.ModelViewSet):
@@ -354,6 +372,26 @@ class SalesReturnViewSet(viewsets.ModelViewSet):
     ]
 
     ordering = ["-created_at"]
+    
+    
+    def create(self, request, *args, **kwargs):
+        input_serializer = self.get_serializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
+
+        sales_return = input_serializer.save()
+
+        # Use the read serializer for the API response so that
+        # return_number and all model fields are included.
+        output_serializer = SalesReturnSerializer(
+            sales_return,
+            context=self.get_serializer_context(),
+        )
+
+        return Response(
+            output_serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
+
 
     def get_queryset(self):
         return SalesReturn.objects.select_related(
@@ -397,7 +435,8 @@ class SalesReturnViewSet(viewsets.ModelViewSet):
             )
 
         return Response(
-            SalesReturnSerializer(sales_return).data
+            SalesReturnSerializer(sales_return).data,
+            status=status.HTTP_200_OK,
         )
 
     @action(detail=True, methods=["post"])
@@ -420,5 +459,6 @@ class SalesReturnViewSet(viewsets.ModelViewSet):
             )
 
         return Response(
-            SalesReturnSerializer(sales_return).data
+            SalesReturnSerializer(sales_return).data,
+            status=status.HTTP_200_OK,
         )

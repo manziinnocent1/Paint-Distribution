@@ -1,5 +1,5 @@
-
 from datetime import date
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -76,6 +76,9 @@ class ExpenseSerializerTests(TestCase):
             description="Transport expenses",
         )
 
+        # Decimal values (not strings): the in-memory instance keeps
+        # exactly what is passed to create(), and total_amount adds
+        # amount + tax_amount, which concatenates if both are strings.
         self.expense = Expense.objects.create(
             expense_number="EXP-TEST000001",
             category=self.category,
@@ -83,8 +86,8 @@ class ExpenseSerializerTests(TestCase):
             description="Transport for a business meeting",
             supplier_name="ABC Transport",
             supplier_reference="SUP-001",
-            amount="10000.00",
-            tax_amount="1800.00",
+            amount=Decimal("10000.00"),
+            tax_amount=Decimal("1800.00"),
             currency="RWF",
             expense_date=date(2026, 1, 15),
             created_by=self.user,
@@ -105,7 +108,7 @@ class ExpenseSerializerTests(TestCase):
         )
 
     def test_total_amount_is_calculated_correctly(self):
-        self.assertEqual(self.expense.total_amount, 11800)
+        self.assertEqual(self.expense.total_amount, Decimal("11800.00"))
 
     def test_expense_number_is_read_only(self):
         serializer = ExpenseSerializer(

@@ -1,3 +1,6 @@
+import json
+
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
 from rest_framework import viewsets, filters
 
@@ -5,6 +8,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.audit.models import AuditLog
 from apps.audit.services import record_audit_event
+
+from apps.colors.mixins import SafeCreatedByMixin
 
 from apps.colors.models import (
     ColorFamily,
@@ -31,7 +36,15 @@ from apps.colors.filters import (
 )
 
 
-class ColorAuditMixin:
+def make_json_safe(data):
+    """
+    Convert serializer output (UUID, Decimal, datetime, ...) into plain
+    JSON-compatible values so it can be stored in an audit JSONField.
+    """
+    return json.loads(json.dumps(data, cls=DjangoJSONEncoder))
+
+
+class ColorAuditMixin(SafeCreatedByMixin):
     def audit(self, action, instance, description, changes=None):
         request = self.request
 
@@ -40,7 +53,7 @@ class ColorAuditMixin:
             action=action,
             description=description,
             instance=instance,
-            changes=changes or {},
+            changes=make_json_safe(changes or {}),
             metadata={"application": "colors"},
             ip_address=request.META.get("REMOTE_ADDR"),
             user_agent=request.META.get("HTTP_USER_AGENT", ""),
@@ -48,9 +61,8 @@ class ColorAuditMixin:
 
     @transaction.atomic
     def perform_create(self, serializer):
-        instance = serializer.save(
-            created_by=self.request.user
-        )
+        # Only sets created_by when the model actually has that field
+        instance = self.save_with_creator(serializer)
 
         self.audit(
             AuditLog.Action.CREATE,

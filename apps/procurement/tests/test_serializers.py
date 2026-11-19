@@ -665,4 +665,4 @@ class GoodsReceiptSerializerTests(ProcurementSerializerTestBase):
         )
 
         self.assertFalse(serializer.is_valid())
-        self.assertIn("non_field_errors", serializer.errors)
+        self.assertIn("items", serializer.errors)

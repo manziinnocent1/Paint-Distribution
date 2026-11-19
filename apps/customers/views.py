@@ -156,7 +156,7 @@ class CustomerAddressViewSet(
     def perform_create(self, serializer):
         customer = serializer.validated_data["customer"]
 
-        if not customer.is_active:
+        if customer.status != customer.Status.ACTIVE:
             raise ValidationError(
                 {"customer": "Cannot add an address to an inactive customer."}
             )
@@ -196,7 +196,7 @@ class CustomerContactViewSet(
     def perform_create(self, serializer):
         customer = serializer.validated_data["customer"]
 
-        if not customer.is_active:
+        if customer.status != customer.Status.ACTIVE:
             raise ValidationError(
                 {"customer": "Cannot add a contact to an inactive customer."}
             )

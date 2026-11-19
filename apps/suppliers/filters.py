@@ -1,6 +1,11 @@
+
 import django_filters
 
-from .models import Supplier, SupplierProduct
+from .models import (
+    Supplier,
+    SupplierContact,
+    SupplierProduct,
+)
 
 
 class SupplierFilter(django_filters.FilterSet):
@@ -34,6 +39,24 @@ class SupplierFilter(django_filters.FilterSet):
         ]
 
 
+class SupplierContactFilter(django_filters.FilterSet):
+
+    supplier = django_filters.UUIDFilter(
+        field_name="supplier_id",
+    )
+
+    is_primary = django_filters.BooleanFilter(
+        field_name="is_primary",
+    )
+
+    class Meta:
+        model = SupplierContact
+        fields = [
+            "supplier",
+            "is_primary",
+        ]
+
+
 class SupplierProductFilter(django_filters.FilterSet):
 
     supplier = django_filters.UUIDFilter(
@@ -44,9 +67,13 @@ class SupplierProductFilter(django_filters.FilterSet):
         field_name="product_variant_id",
     )
 
-    is_preferred = django_filters.BooleanFilter()
+    is_preferred = django_filters.BooleanFilter(
+        field_name="is_preferred",
+    )
 
-    is_active = django_filters.BooleanFilter()
+    is_active = django_filters.BooleanFilter(
+        field_name="is_active",
+    )
 
     class Meta:
         model = SupplierProduct

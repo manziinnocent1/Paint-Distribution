@@ -1,4 +1,3 @@
-
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -126,7 +125,8 @@ class CustomerViewSetTests(APITestCase):
 
         mock_audit.assert_called_once()
 
-    def test_customer_number_is_generated_automatically(self):
+    @patch("apps.customers.views.record_audit_event")
+    def test_customer_number_is_generated_automatically(self, mock_audit):
         url = reverse("customers-list")
 
         data = {
@@ -134,6 +134,7 @@ class CustomerViewSetTests(APITestCase):
             "first_name": "Peter",
             "last_name": "Mugisha",
             "email": "peter@example.com",
+            "phone_number": "+250788123460",
         }
 
         response = self.client.post(url, data, format="json")
@@ -267,6 +268,7 @@ class CustomerAddressViewSetTests(APITestCase):
         self.client.force_authenticate(user=self.staff_user)
 
     def get_address_data(self, customer):
+        """API payload: the customer is sent as a string id."""
         return {
             "customer": str(customer.pk),
             "address_type": CustomerAddress.AddressType.DELIVERY,
@@ -281,6 +283,12 @@ class CustomerAddressViewSetTests(APITestCase):
             "is_default": True,
             "is_active": True,
         }
+
+    def create_address(self, customer):
+        """ORM creation: the model needs a Customer instance, not a string."""
+        data = self.get_address_data(customer)
+        data["customer"] = customer
+        return CustomerAddress.objects.create(**data)
 
     def test_list_customer_addresses(self):
         url = reverse("customer-addresses-list")
@@ -332,9 +340,7 @@ class CustomerAddressViewSetTests(APITestCase):
 
     @patch("apps.customers.views.record_audit_event")
     def test_update_customer_address(self, mock_audit):
-        address = CustomerAddress.objects.create(
-            **self.get_address_data(self.customer)
-        )
+        address = self.create_address(self.customer)
 
         url = reverse(
             "customer-addresses-detail",
@@ -360,9 +366,7 @@ class CustomerAddressViewSetTests(APITestCase):
 
     @patch("apps.customers.views.record_audit_event")
     def test_delete_customer_address(self, mock_audit):
-        address = CustomerAddress.objects.create(
-            **self.get_address_data(self.customer)
-        )
+        address = self.create_address(self.customer)
 
         url = reverse(
             "customer-addresses-detail",
@@ -383,9 +387,7 @@ class CustomerAddressViewSetTests(APITestCase):
         mock_audit.assert_called_once()
 
     def test_search_addresses_by_district(self):
-        CustomerAddress.objects.create(
-            **self.get_address_data(self.customer)
-        )
+        self.create_address(self.customer)
 
         url = reverse("customer-addresses-list")
 
@@ -428,6 +430,7 @@ class CustomerContactViewSetTests(APITestCase):
         self.client.force_authenticate(user=self.staff_user)
 
     def get_contact_data(self, customer):
+        """API payload: the customer is sent as a string id."""
         return {
             "customer": str(customer.pk),
             "full_name": "James Patrick",
@@ -437,6 +440,12 @@ class CustomerContactViewSetTests(APITestCase):
             "is_primary": True,
             "notes": "Main business contact",
         }
+
+    def create_contact(self, customer):
+        """ORM creation: the model needs a Customer instance, not a string."""
+        data = self.get_contact_data(customer)
+        data["customer"] = customer
+        return CustomerContact.objects.create(**data)
 
     def test_list_customer_contacts(self):
         url = reverse("customer-contacts-list")
@@ -488,9 +497,7 @@ class CustomerContactViewSetTests(APITestCase):
 
     @patch("apps.customers.views.record_audit_event")
     def test_update_customer_contact(self, mock_audit):
-        contact = CustomerContact.objects.create(
-            **self.get_contact_data(self.customer)
-        )
+        contact = self.create_contact(self.customer)
 
         url = reverse(
             "customer-contacts-detail",
@@ -520,9 +527,7 @@ class CustomerContactViewSetTests(APITestCase):
 
     @patch("apps.customers.views.record_audit_event")
     def test_delete_customer_contact(self, mock_audit):
-        contact = CustomerContact.objects.create(
-            **self.get_contact_data(self.customer)
-        )
+        contact = self.create_contact(self.customer)
 
         url = reverse(
             "customer-contacts-detail",
@@ -543,9 +548,7 @@ class CustomerContactViewSetTests(APITestCase):
         mock_audit.assert_called_once()
 
     def test_search_contacts_by_full_name(self):
-        CustomerContact.objects.create(
-            **self.get_contact_data(self.customer)
-        )
+        self.create_contact(self.customer)
 
         url = reverse("customer-contacts-list")
 
@@ -557,9 +560,7 @@ class CustomerContactViewSetTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_filter_contacts_by_primary_status(self):
-        CustomerContact.objects.create(
-            **self.get_contact_data(self.customer)
-        )
+        self.create_contact(self.customer)
 
         url = reverse("customer-contacts-list")
 

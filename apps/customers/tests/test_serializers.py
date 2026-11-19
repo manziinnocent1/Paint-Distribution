@@ -1,4 +1,3 @@
-
 from django.test import TestCase
 from rest_framework import serializers
 
@@ -206,6 +205,7 @@ class CustomerSerializerTests(TestCase):
             "customer_type": Customer.CustomerType.INDIVIDUAL,
             "first_name": "",
             "last_name": "Doe",
+            "phone_number": "+250788123456",
         }
 
         serializer = CustomerSerializer(data=data)
@@ -218,6 +218,7 @@ class CustomerSerializerTests(TestCase):
         data = {
             "customer_type": Customer.CustomerType.BUSINESS,
             "business_name": "",
+            "phone_number": "+250788123456",
         }
 
         serializer = CustomerSerializer(data=data)
@@ -230,6 +231,7 @@ class CustomerSerializerTests(TestCase):
         data = {
             "customer_type": Customer.CustomerType.INDIVIDUAL,
             "first_name": "   ",
+            "phone_number": "+250788123456",
         }
 
         serializer = CustomerSerializer(data=data)
@@ -242,6 +244,7 @@ class CustomerSerializerTests(TestCase):
         data = {
             "customer_type": Customer.CustomerType.BUSINESS,
             "business_name": "   ",
+            "phone_number": "+250788123456",
         }
 
         serializer = CustomerSerializer(data=data)

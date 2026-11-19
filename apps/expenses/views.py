@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db.models import ProtectedError
 
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
@@ -26,7 +27,6 @@ def run_service(function, **kwargs):
 
 
 class ExpenseCategoryViewSet(viewsets.ModelViewSet):
-
     queryset = ExpenseCategory.objects.all()
     serializer_class = ExpenseCategorySerializer
     permission_classes = [IsExpenseStaff]
@@ -41,6 +41,15 @@ class ExpenseCategoryViewSet(viewsets.ModelViewSet):
     search_fields = ["name", "code", "description"]
     ordering_fields = ["name", "created_at"]
     ordering = ["name"]
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ProtectedError:
+            return Response(
+                {"detail": "This category has expenses and cannot be deleted."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):

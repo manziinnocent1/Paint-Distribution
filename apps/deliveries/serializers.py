@@ -127,7 +127,7 @@ class DeliverySerializer(serializers.ModelSerializer):
                 )
             })
 
-        if customer and not customer.is_active:
+        if customer and customer.status != customer.Status.ACTIVE:
             raise serializers.ValidationError({
                 "customer": "Cannot create a delivery for an inactive customer."
             })

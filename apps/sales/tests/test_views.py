@@ -752,7 +752,7 @@ class TestSalesReturnViews:
             format="json",
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 403
 
     def test_manager_can_reject_draft_return(
         self,

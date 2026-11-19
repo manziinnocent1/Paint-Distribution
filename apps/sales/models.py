@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 
 from django.conf import settings
 from django.core.validators import MinValueValidator
@@ -116,13 +117,13 @@ class SalesQuotationItem(models.Model):
     quantity = models.DecimalField(
         max_digits=14,
         decimal_places=3,
-        validators=[MinValueValidator(0.001)],
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     unit_price = models.DecimalField(
         max_digits=14,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal("0"))],
     )
 
     discount_amount = models.DecimalField(
@@ -302,13 +303,13 @@ class SaleItem(models.Model):
     quantity = models.DecimalField(
         max_digits=14,
         decimal_places=3,
-        validators=[MinValueValidator(0.001)],
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     unit_price = models.DecimalField(
         max_digits=14,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal("0"))],
     )
 
     discount_amount = models.DecimalField(
@@ -400,6 +401,9 @@ class SalesReturn(models.Model):
         db_table = "sales_returns"
         ordering = ["-created_at"]
 
+    def __str__(self):
+        return self.return_number
+
 
 class SalesReturnItem(models.Model):
 
@@ -424,13 +428,13 @@ class SalesReturnItem(models.Model):
     quantity = models.DecimalField(
         max_digits=14,
         decimal_places=3,
-        validators=[MinValueValidator(0.001)],
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     unit_refund_amount = models.DecimalField(
         max_digits=14,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal("0"))],
     )
 
     condition_notes = models.TextField(blank=True)

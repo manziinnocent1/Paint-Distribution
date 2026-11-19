@@ -1,3 +1,5 @@
+
+import uuid
 from decimal import Decimal
 
 from django.db import transaction
@@ -20,17 +22,14 @@ from .models import (
 
 
 class SalesQuotationItemSerializer(serializers.ModelSerializer):
-
     product_name = serializers.CharField(
         source="product_variant.product.name",
         read_only=True,
     )
-
     variant_name = serializers.CharField(
         source="product_variant.name",
         read_only=True,
     )
-
     sku = serializers.CharField(
         source="product_variant.sku",
         read_only=True,
@@ -39,21 +38,15 @@ class SalesQuotationItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesQuotationItem
         fields = "__all__"
-        read_only_fields = (
-            "id",
-            "line_total",
-        )
+        read_only_fields = ("id", "line_total")
 
 
 class SalesQuotationSerializer(serializers.ModelSerializer):
-
     items = SalesQuotationItemSerializer(
         many=True,
         read_only=True,
     )
-
     customer_name = serializers.SerializerMethodField()
-
     warehouse_name = serializers.CharField(
         source="warehouse.name",
         read_only=True,
@@ -62,7 +55,6 @@ class SalesQuotationSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesQuotation
         fields = "__all__"
-
         read_only_fields = (
             "id",
             "quotation_number",
@@ -80,7 +72,6 @@ class SalesQuotationSerializer(serializers.ModelSerializer):
 
 
 class SalesQuotationItemCreateSerializer(serializers.Serializer):
-
     product_variant = serializers.PrimaryKeyRelatedField(
         queryset=ProductVariant.objects.filter(
             is_active=True,
@@ -99,7 +90,6 @@ class SalesQuotationItemCreateSerializer(serializers.Serializer):
 
 
 class SalesQuotationCreateSerializer(serializers.Serializer):
-
     customer = serializers.PrimaryKeyRelatedField(
         queryset=Customer.objects.filter(
             status=Customer.Status.ACTIVE,
@@ -116,6 +106,8 @@ class SalesQuotationCreateSerializer(serializers.Serializer):
         required=False,
         default=timezone.localdate,
     )
+    
+    quotation_number = serializers.CharField(read_only=True)
 
     valid_until = serializers.DateField()
 
@@ -137,8 +129,9 @@ class SalesQuotationCreateSerializer(serializers.Serializer):
     def validate(self, attrs):
         if attrs["valid_until"] < attrs["quotation_date"]:
             raise serializers.ValidationError({
-                "valid_until":
+                "valid_until": (
                     "Quotation expiry cannot be before its quotation date."
+                )
             })
 
         return attrs
@@ -153,9 +146,9 @@ class SalesQuotationCreateSerializer(serializers.Serializer):
                 created_by=user,
             )
 
-            subtotal = Decimal("0")
-            total_discount = Decimal("0")
-            total_tax = Decimal("0")
+            subtotal = Decimal("0.00")
+            total_discount = Decimal("0.00")
+            total_tax = Decimal("0.00")
 
             for item in items:
                 variant = item["product_variant"]
@@ -167,9 +160,11 @@ class SalesQuotationCreateSerializer(serializers.Serializer):
                 gross = unit_price * quantity
 
                 if discount > gross:
-                    raise serializers.ValidationError(
-                        "An item discount cannot exceed its gross value."
-                    )
+                    raise serializers.ValidationError({
+                        "discount_amount": (
+                            "An item discount cannot exceed its gross value."
+                        )
+                    })
 
                 taxable_amount = gross - discount
                 tax_rate = variant.product.tax_rate
@@ -217,11 +212,9 @@ class SalesQuotationCreateSerializer(serializers.Serializer):
 
 
 class SaleItemSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = SaleItem
         fields = "__all__"
-
         read_only_fields = (
             "id",
             "sale",
@@ -237,7 +230,6 @@ class SaleItemSerializer(serializers.ModelSerializer):
 
 
 class SaleSerializer(serializers.ModelSerializer):
-
     items = SaleItemSerializer(
         many=True,
         read_only=True,
@@ -253,7 +245,6 @@ class SaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sale
         fields = "__all__"
-
         read_only_fields = (
             "id",
             "sale_number",
@@ -273,7 +264,6 @@ class SaleSerializer(serializers.ModelSerializer):
 
 
 class SaleItemCreateSerializer(serializers.Serializer):
-
     product_variant = serializers.PrimaryKeyRelatedField(
         queryset=ProductVariant.objects.filter(
             is_active=True,
@@ -292,7 +282,6 @@ class SaleItemCreateSerializer(serializers.Serializer):
 
 
 class SaleCreateSerializer(serializers.Serializer):
-
     customer = serializers.PrimaryKeyRelatedField(
         queryset=Customer.objects.filter(
             status=Customer.Status.ACTIVE,
@@ -306,9 +295,9 @@ class SaleCreateSerializer(serializers.Serializer):
     )
 
     sales_channel = serializers.ChoiceField(
-    choices=Sale.SalesChannel.choices,
-    default=Sale.SalesChannel.DIRECT,
-)
+        choices=Sale.SalesChannel.choices,
+        default=Sale.SalesChannel.DIRECT,
+    )
 
     sale_date = serializers.DateField(
         required=False,
@@ -341,15 +330,15 @@ class SaleCreateSerializer(serializers.Serializer):
 
             if item["discount_amount"] > gross:
                 raise serializers.ValidationError({
-                    "items":
+                    "items": (
                         "An item discount cannot exceed its gross value."
+                    )
                 })
 
         return attrs
 
 
 class SalesReturnItemSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = SalesReturnItem
         fields = "__all__"
@@ -357,7 +346,6 @@ class SalesReturnItemSerializer(serializers.ModelSerializer):
 
 
 class SalesReturnSerializer(serializers.ModelSerializer):
-
     items = SalesReturnItemSerializer(
         many=True,
         read_only=True,
@@ -371,7 +359,6 @@ class SalesReturnSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesReturn
         fields = "__all__"
-
         read_only_fields = (
             "id",
             "return_number",
@@ -383,7 +370,6 @@ class SalesReturnSerializer(serializers.ModelSerializer):
 
 
 class SalesReturnItemCreateSerializer(serializers.Serializer):
-
     sale_item = serializers.PrimaryKeyRelatedField(
         queryset=SaleItem.objects.all(),
     )
@@ -397,7 +383,6 @@ class SalesReturnItemCreateSerializer(serializers.Serializer):
 
 
 class SalesReturnCreateSerializer(serializers.Serializer):
-
     sale = serializers.PrimaryKeyRelatedField(
         queryset=Sale.objects.all(),
     )
@@ -435,8 +420,6 @@ class SalesReturnCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         items = validated_data.pop("items")
 
-        import uuid
-
         with transaction.atomic():
             sales_return = SalesReturn.objects.create(
                 **validated_data,
@@ -447,9 +430,15 @@ class SalesReturnCreateSerializer(serializers.Serializer):
             )
 
             for item in items:
+                sale_item = item["sale_item"]
+
+                # The refund unit price is taken from the original sale.
                 SalesReturnItem.objects.create(
                     sales_return=sales_return,
-                    **item,
+                    sale_item=sale_item,
+                    quantity=item["quantity"],
+                    unit_refund_amount=sale_item.unit_price,
+                    condition_notes=item.get("condition_notes", ""),
                 )
 
         return sales_return

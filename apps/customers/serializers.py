@@ -7,7 +7,26 @@ from apps.customers.models import (
 )
 
 
-class CustomerAddressSerializer(serializers.ModelSerializer):
+class ActiveCustomerValidationMixin:
+    """
+    Rejects addresses/contacts for customers that are not active.
+    Customer uses a `status` field (not `is_active`).
+    The error is keyed under "customer" so clients and tests can
+    find it with response.data["customer"].
+    """
+
+    def validate_customer(self, customer):
+        if customer.status != Customer.Status.ACTIVE:
+            raise serializers.ValidationError(
+                "This customer is not active."
+            )
+        return customer
+
+
+class CustomerAddressSerializer(
+    ActiveCustomerValidationMixin,
+    serializers.ModelSerializer,
+):
     class Meta:
         model = CustomerAddress
         fields = [
@@ -36,7 +55,10 @@ class CustomerAddressSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at", "updated_at"]
 
 
-class CustomerContactSerializer(serializers.ModelSerializer):
+class CustomerContactSerializer(
+    ActiveCustomerValidationMixin,
+    serializers.ModelSerializer,
+):
     class Meta:
         model = CustomerContact
         fields = [
@@ -126,12 +148,12 @@ class CustomerSerializer(serializers.ModelSerializer):
         first_name = attrs.get(
             "first_name",
             getattr(self.instance, "first_name", ""),
-        )
+        ) or ""
 
         business_name = attrs.get(
             "business_name",
             getattr(self.instance, "business_name", ""),
-        )
+        ) or ""
 
         if (
             customer_type == Customer.CustomerType.INDIVIDUAL

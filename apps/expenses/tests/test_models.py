@@ -1,3 +1,6 @@
+from datetime import date
+from decimal import Decimal
+
 import pytest
 
 from apps.expenses.models import Expense, ExpenseCategory
@@ -22,16 +25,18 @@ def test_create_expense():
         code="TRANSPORT",
     )
 
+    # Decimal values (not strings) so that total_amount adds numbers
+    # instead of concatenating '100000.00' + '18000.00'.
     expense = Expense.objects.create(
         expense_number="EXP-TEST001",
         category=category,
         title="Product transportation",
-        amount="100000.00",
-        tax_amount="18000.00",
+        amount=Decimal("100000.00"),
+        tax_amount=Decimal("18000.00"),
         currency="RWF",
-        expense_date="2026-11-17",
+        expense_date=date(2026, 11, 17),
     )
 
     assert expense.pk is not None
-    assert expense.total_amount == 118000
+    assert expense.total_amount == Decimal("118000.00")
     assert expense.status == Expense.Status.DRAFT
