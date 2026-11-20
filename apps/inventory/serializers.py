@@ -1,6 +1,8 @@
 from django.db import models
 from rest_framework import serializers
 
+from decimal import Decimal
+
 from apps.inventory.models import (
     Warehouse,
     StockLevel,
@@ -169,9 +171,9 @@ class StockOperationSerializer(serializers.Serializer):
     )
 
     quantity = serializers.DecimalField(
-        max_digits=14,
-        decimal_places=3,
-        min_value=0.001,
+    max_digits=14,
+    decimal_places=3,
+    min_value=Decimal("0.001"),
     )
 
     unit_cost = serializers.DecimalField(

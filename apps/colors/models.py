@@ -1,3 +1,4 @@
+from decimal import Decimal
 import uuid
 
 from django.conf import settings
@@ -162,7 +163,7 @@ class ColorFormula(UUIDTimestampModel):
     batch_size = models.DecimalField(
         max_digits=14,
         decimal_places=4,
-        validators=[MinValueValidator(0.0001)],
+        validators=[MinValueValidator(Decimal("0.0001"))],
         help_text="Amount of paint this formula produces.",
     )
 
@@ -218,7 +219,7 @@ class ColorFormulaIngredient(UUIDTimestampModel):
     quantity = models.DecimalField(
         max_digits=14,
         decimal_places=4,
-        validators=[MinValueValidator(0.0001)],
+        validators=[MinValueValidator(Decimal("0.0001"))],
     )
 
     unit = models.CharField(

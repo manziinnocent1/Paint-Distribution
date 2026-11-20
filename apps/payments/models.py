@@ -1,3 +1,4 @@
+from decimal import Decimal
 
 import uuid
 
@@ -54,7 +55,7 @@ class Payment(models.Model):
     amount = models.DecimalField(
         max_digits=14,
         decimal_places=2,
-        validators=[MinValueValidator(0.01)],
+        validators=[MinValueValidator(Decimal("0.01"))],
     )
 
     currency = models.CharField(max_length=3, default="RWF")
@@ -154,7 +155,7 @@ class PaymentRefund(models.Model):
     amount = models.DecimalField(
         max_digits=14,
         decimal_places=2,
-        validators=[MinValueValidator(0.01)],
+        validators=[MinValueValidator(Decimal("0.01"))],
     )
 
     reason = models.TextField()

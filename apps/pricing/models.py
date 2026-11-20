@@ -6,6 +6,8 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
+from decimal import Decimal
+
 
 class Price(models.Model):
 
@@ -48,7 +50,8 @@ class Price(models.Model):
     amount = models.DecimalField(
         max_digits=14,
         decimal_places=2,
-        validators=[MinValueValidator(0.01)],
+        validators=[MinValueValidator(Decimal("0.01"))],
+
     )
 
     currency = models.CharField(
@@ -60,7 +63,7 @@ class Price(models.Model):
         max_digits=14,
         decimal_places=3,
         default=1,
-        validators=[MinValueValidator(0.001)],
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     effective_from = models.DateTimeField(default=timezone.now)
@@ -162,7 +165,7 @@ class Discount(models.Model):
     value = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        validators=[MinValueValidator(0.01)],
+        validators=[MinValueValidator(Decimal("0.01"))],
     )
 
     product_variant_id = models.UUIDField(

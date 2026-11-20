@@ -1,3 +1,4 @@
+from decimal import Decimal
 
 from rest_framework import serializers
 
@@ -52,6 +53,6 @@ class RefundCreateSerializer(serializers.Serializer):
     amount = serializers.DecimalField(
         max_digits=14,
         decimal_places=2,
-        min_value=0.01,
+        min_value=Decimal("0.01"),
     )
     reason = serializers.CharField()

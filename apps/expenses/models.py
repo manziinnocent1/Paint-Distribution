@@ -1,3 +1,4 @@
+from decimal import Decimal
 import uuid
 
 from django.conf import settings
@@ -94,7 +95,7 @@ class Expense(UUIDTimestampModel):
     amount = models.DecimalField(
         max_digits=14,
         decimal_places=2,
-        validators=[MinValueValidator(0.01)],
+        validators=[MinValueValidator(Decimal("0.01"))],
     )
 
     tax_amount = models.DecimalField(

@@ -1,3 +1,4 @@
+from decimal import Decimal
 import uuid
 
 from django.conf import settings
@@ -85,7 +86,7 @@ class PurchaseRequestItem(models.Model):
     quantity = models.DecimalField(
         max_digits=14,
         decimal_places=3,
-        validators=[MinValueValidator(0.001)],
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     notes = models.TextField(blank=True)
@@ -240,7 +241,7 @@ class PurchaseOrderItem(models.Model):
     quantity_ordered = models.DecimalField(
         max_digits=14,
         decimal_places=3,
-        validators=[MinValueValidator(0.001)],
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     quantity_received = models.DecimalField(
@@ -356,7 +357,7 @@ class GoodsReceiptItem(models.Model):
     quantity_received = models.DecimalField(
         max_digits=14,
         decimal_places=3,
-        validators=[MinValueValidator(0.001)],
+        validators=[MinValueValidator(Decimal("0.001"))],
     )
 
     quantity_rejected = models.DecimalField(
