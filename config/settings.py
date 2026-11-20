@@ -249,7 +249,7 @@ SPECTACULAR_SETTINGS = {
         {"name": "pricing", "description": "Pricing rules"},
         {"name": "payments", "description": "Payments"},
         {"name": "suppliers", "description": "Suppliers"},
-        {"name": "procurement", "description": "Purchase requests, orders and goods receipts"},
+        # {"name": "procurement", "description": "Purchase requests, orders and goods receipts"},
         {"name": "sales", "description": "Quotations, sales and returns"},
     ],
 }
