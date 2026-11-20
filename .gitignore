@@ -1,37 +1,26 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-
-# Virtual environment
 venv/
-env/
-.venv/
-
-# Django
-*.log
-db.sqlite3
-staticfiles/
-media/
-
-# Environment variables
 .env
-.env.example
-
-# Testing
+.env.*
+!.env.example
 .pytest_cache/
 .coverage
 htmlcov/
 
+# Django
+staticfiles/
+media/
+
+# React / Node
+node_modules/
+dist/
+build/
+
+# System
+.DS_Store
+
 # IDE
 .vscode/
 .idea/
-
-# Operating system
-.DS_Store
-
-# Python packaging
-build/
-dist/
-*.egg-info/
