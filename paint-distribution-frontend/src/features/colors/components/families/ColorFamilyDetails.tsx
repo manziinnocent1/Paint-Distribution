@@ -2,8 +2,8 @@ import { CalendarDays, Palette } from "lucide-react";
 
 import type { ColorFamily, Color } from "../../types/color.types";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
 import { ColorSwatch } from "../shared/ColorSwatch";
 import { formatDate } from "../../utils/color.utils";

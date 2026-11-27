@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { AlertCircle, ArrowLeft, RefreshCw } from "lucide-react";
 
-import AuditDetails from "../components/AuditDetails";
+// import AuditDetails from "./components/AuditDetails";
 import { useAuditDetails } from "../hooks/useAuditDetails";
 
 export default function AuditDetailsPage() {
@@ -71,7 +71,7 @@ export default function AuditDetailsPage() {
         </div>
       )}
 
-      {!loading && !error && data && <AuditDetails audit={data} />}
+      {/* {!loading && !error && data && <AuditDetails audit={data} />} */}
 
       {!loading && !error && !data && (
         <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">

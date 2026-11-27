@@ -2,7 +2,10 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { accountService } from "../services/accountService";
-import type { Account } from "../types/account.types";
+import type {
+  Account,
+  UpdateAccountRequest,
+} from "../types/account.types";
 
 interface UseAccountDetailsReturn {
   account: Account | null;
@@ -10,35 +13,42 @@ interface UseAccountDetailsReturn {
   error: string | null;
   refresh: () => Promise<void>;
   updateAccount: (
-    data: Partial<Account>
+    data: UpdateAccountRequest
   ) => Promise<Account>;
 }
 
 function getErrorMessage(error: unknown): string {
-  const responseError = error as {
-    response?: {
-      data?: {
-        detail?: string;
-        message?: string;
+  if (error instanceof Error) {
+    const apiError = error as Error & {
+      response?: {
+        data?: {
+          detail?: string;
+          message?: string;
+        };
       };
     };
-  };
 
-  return (
-    responseError.response?.data?.detail ||
-    responseError.response?.data?.message ||
-    "Unable to load account information."
-  );
+    return (
+      apiError.response?.data?.detail ||
+      apiError.response?.data?.message ||
+      apiError.message ||
+      "Unable to process account information."
+    );
+  }
+
+  return "An unexpected error occurred.";
 }
 
 export function useAccountDetails(
   accountId?: string
 ): UseAccountDetailsReturn {
   const [account, setAccount] = useState<Account | null>(null);
+
   const [loading, setLoading] = useState(Boolean(accountId));
+
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<void> => {
     if (!accountId) {
       setAccount(null);
       setLoading(false);
@@ -51,8 +61,9 @@ export function useAccountDetails(
 
     try {
       const result = await accountService.getAccount(accountId);
+
       setAccount(result);
-    } catch (err) {
+    } catch (err: unknown) {
       setError(getErrorMessage(err));
     } finally {
       setLoading(false);
@@ -63,22 +74,35 @@ export function useAccountDetails(
     void refresh();
   }, [refresh]);
 
-  const updateAccount = async (
-    data: Partial<Account>
-  ): Promise<Account> => {
-    if (!accountId) {
-      throw new Error("An account ID is required.");
-    }
+  const updateAccount = useCallback(
+    async (
+      data: UpdateAccountRequest
+    ): Promise<Account> => {
+      if (!accountId) {
+        throw new Error("An account ID is required.");
+      }
 
-    const updated = await accountService.updateAccount(
-      accountId,
-      data
-    );
+      try {
+        setError(null);
 
-    setAccount(updated);
+        const updated = await accountService.updateAccount(
+          accountId,
+          data
+        );
 
-    return updated;
-  };
+        setAccount(updated);
+
+        return updated;
+      } catch (err: unknown) {
+        const message = getErrorMessage(err);
+
+        setError(message);
+
+        throw err;
+      }
+    },
+    [accountId]
+  );
 
   return {
     account,

@@ -6,7 +6,7 @@ import {
   Info,
   X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 export type AlertVariant = "success" | "error" | "warning" | "info";
 

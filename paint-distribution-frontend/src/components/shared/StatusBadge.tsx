@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Badge, type BadgeVariant } from "@/components/ui";
+import { Badge, type BadgeVariant } from "../../components/ui";
 
 export type BusinessStatus =
   | "active"

@@ -14,7 +14,7 @@ export { default as EditBrandPage } from "./pages/EditBrandPage";
 // Components
 export { default as ProductTable } from "./components/ProductTable";
 export { default as ProductForm } from "./components/ProductForm";
-export { default as ProductDetails } from "./components/ProductDetails";
+// export { default as ProductDetails } from "./components/ProductDetails";
 export { default as ProductFilters } from "./components/ProductFilters";
 export { default as ProductStatusBadge } from "./components/ProductStatusBadge";
 export { default as ProductImageGallery } from "./components/ProductImageGallery";

@@ -9,7 +9,7 @@ import {
   User,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Dropdown } from "@/components/ui";
+import { Dropdown } from "../../components/ui";
 
 export interface HeaderProps {
   userName?: string;

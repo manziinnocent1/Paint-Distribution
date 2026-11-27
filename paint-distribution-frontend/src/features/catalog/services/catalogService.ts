@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api from "../../../lib/axios";
 
 import type {
   Brand,
@@ -22,16 +22,21 @@ const BRANDS_URL = "/catalog/brands/";
 const buildParams = (
   filters: ProductFilters | CategoryFilters | BrandFilters,
 ) => {
-  const params: Record<string, string | number | boolean> = {
-    page: filters.page,
-    page_size: filters.page_size,
-  };
+  const params: Record<string, string | number | boolean> = {};
+
+  if (filters.page !== undefined) {
+    params.page = filters.page;
+  }
+
+  if (filters.page_size !== undefined) {
+    params.page_size = filters.page_size;
+  }
 
   if (filters.search) {
     params.search = filters.search;
   }
 
-  if (filters.ordering && "ordering" in filters && filters.ordering) {
+  if (filters.ordering) {
     params.ordering = filters.ordering;
   }
 

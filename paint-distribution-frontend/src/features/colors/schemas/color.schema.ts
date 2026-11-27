@@ -51,6 +51,11 @@ export const colorFormulaSchema = z.object({
   }
 });
 
-export type ColorSchemaValues = z.infer<typeof colorSchema>;
-export type ColorFamilySchemaValues = z.infer<typeof colorFamilySchema>;
-export type ColorFormulaSchemaValues = z.infer<typeof colorFormulaSchema>;
+export type ColorSchemaInput = z.input<typeof colorSchema>;
+export type ColorSchemaValues = z.output<typeof colorSchema>;
+
+export type ColorFamilySchemaInput = z.input<typeof colorFamilySchema>;
+export type ColorFamilySchemaValues = z.output<typeof colorFamilySchema>;
+
+export type ColorFormulaSchemaInput = z.input<typeof colorFormulaSchema>;
+export type ColorFormulaSchemaValues = z.output<typeof colorFormulaSchema>;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Inbox, Plus } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 
 export interface EmptyStateProps {
   title?: string;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AlertCircle, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 
 export interface ErrorStateProps {
   title?: string;

@@ -109,27 +109,29 @@ export interface ProductListItem {
 }
 
 export interface ProductFilters {
-  search?: string;
-  category?: string;
-  brand?: string;
-  is_active?: boolean | "";
-  ordering?: string;
   page: number;
   page_size: number;
+  search?: string;
+  ordering?: string;
+  is_active?: boolean | "";
+  category?: string;
+  brand?: string;
 }
 
 export interface CategoryFilters {
-  search?: string;
-  is_active?: boolean | "";
   page: number;
   page_size: number;
+  search?: string;
+  ordering?: string;
+  is_active?: boolean | "";
 }
 
 export interface BrandFilters {
-  search?: string;
-  is_active?: boolean | "";
   page: number;
   page_size: number;
+  search?: string;
+  ordering?: string;
+  is_active?: boolean | "";
 }
 
 export interface PaginatedResponse<T> {

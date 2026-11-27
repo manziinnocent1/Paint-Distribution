@@ -1,16 +1,19 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { colorFamilySchema } from "../../schemas/color.schema";
+
 import type {
   ColorFamily,
   ColorFamilyFormValues,
 } from "../../types/color.types";
 
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
+import { Button } from "../../components/ui/button";
+import { Switch } from "../../components/ui/switch";
+
 import {
   Form,
   FormControl,
@@ -18,7 +21,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "../../components/ui/form";
 
 interface ColorFamilyFormProps {
   initialData?: ColorFamily;
@@ -33,7 +36,7 @@ export function ColorFamilyForm({
   onCancel,
   isSubmitting = false,
 }: ColorFamilyFormProps) {
-  const form = useForm<ColorFamilyFormValues>({
+  const form = useForm<ColorFamilyFormValues, unknown, ColorFamilyFormValues>({
     resolver: zodResolver(colorFamilySchema),
     defaultValues: {
       name: "",
@@ -44,19 +47,24 @@ export function ColorFamilyForm({
   });
 
   useEffect(() => {
-    if (initialData) {
-      form.reset({
-        name: initialData.name,
-        code: initialData.code,
-        description: initialData.description ?? "",
-        is_active: initialData.is_active,
-      });
-    }
+    form.reset({
+      name: initialData?.name ?? "",
+      code: initialData?.code ?? "",
+      description: initialData?.description ?? "",
+      is_active: initialData?.is_active ?? true,
+    });
   }, [initialData, form]);
+
+  const handleFormSubmit: SubmitHandler<ColorFamilyFormValues> = (values) => {
+    onSubmit(values);
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      <form
+        onSubmit={form.handleSubmit(handleFormSubmit)}
+        className="space-y-5"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -114,10 +122,12 @@ export function ColorFamilyForm({
                   Make this family available for use.
                 </p>
               </div>
+
               <FormControl>
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  disabled={isSubmitting}
                 />
               </FormControl>
             </FormItem>
@@ -126,7 +136,12 @@ export function ColorFamilyForm({
 
         <div className="flex justify-end gap-2">
           {onCancel && (
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
           )}

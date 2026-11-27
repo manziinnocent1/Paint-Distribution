@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Table, type TableColumn, Card } from "@/components/ui";
+import { Table, type TableColumn, Card } from "../../components/ui";
 import { SearchBar } from "./SearchBar";
 import { EmptyState } from "./EmptyState";
 import { ErrorState } from "./ErrorState";
 import { LoadingState } from "./LoadingState";
-import { Pagination } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { Pagination } from "../../components/ui";
+import { cn } from "../../lib/utils";
 
 export interface DataTableProps<T> {
   title?: string;

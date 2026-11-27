@@ -35,6 +35,6 @@ export type {
   ForgotPasswordRequest,
   ResetPasswordRequest,
   ChangePasswordRequest,
-  UserRole,
+  // UserRole,
   ApiMessageResponse,
 } from "./types/auth.types";

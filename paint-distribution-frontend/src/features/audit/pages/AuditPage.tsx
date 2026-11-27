@@ -3,7 +3,7 @@ import { AlertCircle, Download, RefreshCw } from "lucide-react";
 
 import AuditSummary from "../components/AuditSummary";
 import AuditFilters from "../components/AuditFilters";
-import AuditTable from "../components/AuditTable";
+// import AuditTable from "../components/AuditTable";
 
 import { useAuditLogs } from "../hooks/useAuditLogs";
 import { auditService } from "../services/auditService";
@@ -243,7 +243,7 @@ export default function AuditPage() {
         </div>
       </div>
 
-      <AuditTable logs={data?.results ?? []} loading={loading} />
+      {/* <AuditTable logs={data?.results ?? []} loading={loading} /> */}
 
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <p className="text-sm text-gray-500">

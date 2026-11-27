@@ -42,6 +42,30 @@ export interface ChangePasswordRequest {
   confirm_password: string;
 }
 
+/**
+ * Request payload for refreshing an access token.
+ */
+export interface RefreshTokenRequest {
+  refresh: string;
+}
+
+/**
+ * Response returned after successfully refreshing a token.
+ */
+export interface RefreshTokenResponse {
+  access: string;
+  refresh?: string;
+}
+
+/**
+ * Standard API message response.
+ */
+export interface ApiMessageResponse {
+  message: string;
+  detail?: string;
+  success?: boolean;
+}
+
 export interface AuthState {
   user: AuthUser | null;
   accessToken: string | null;
