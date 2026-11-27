@@ -33,7 +33,7 @@ export * from "./services/customerService";
    HOOKS
 ============================================================ */
 
-export * from "./hooks/useCustomers";
+export * from "./hooks/useCustomer";
 export * from "./hooks/useCustomer";
 export * from "./hooks/useCustomerAddresses";
 export * from "./hooks/useCustomerMutations";

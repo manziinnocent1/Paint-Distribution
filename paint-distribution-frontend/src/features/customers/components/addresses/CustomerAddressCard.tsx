@@ -2,15 +2,15 @@ import { MapPin, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import type { CustomerAddress } from "../../types/customer.types";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "../../components/ui/dropdown-menu";
 
 import { formatCustomerAddress } from "../../utils/customer.utils";
 

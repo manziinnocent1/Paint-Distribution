@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "../../components/ui/badge";
 
 import type { CustomerType } from "../../types/customer.types";
 import { CUSTOMER_TYPE_STYLES } from "../../constants/customer.constants";

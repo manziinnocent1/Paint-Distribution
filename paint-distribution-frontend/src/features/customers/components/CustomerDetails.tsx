@@ -10,7 +10,7 @@ import {
 
 import type { Customer } from "../types/customer.types";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 
 import { CustomerAvatar } from "./shared/CustomerAvatar";
 import { CustomerStatusBadge } from "./shared/CustomerStatusBadge";

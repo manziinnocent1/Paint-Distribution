@@ -54,7 +54,7 @@ export * from "./components/ColorTable";
 export * from "./components/ColorForm";
 export * from "./components/ColorCard";
 export * from "./components/ColorDetails";
-export * from "./components/ColorFilters";
+// export * from "./components/ColorFilters";
 
 /* ============================================================
    COLOR FAMILY COMPONENTS
@@ -77,6 +77,6 @@ export * from "./components/formulas/FormulaDetails";
    PAGES
 ============================================================ */
 
-export { default as ColorsPage } from "./pages/ColorsPage";
-export { default as ColorFamiliesPage } from "./pages/ColorFamiliesPage";
-export { default as ColorFormulasPage } from "./pages/ColorFormulasPage";
+export * from "./pages/ColorsPage";
+export * from "./pages/ColorFamiliesPage";
+export * from "./pages/ColorFormulasPage";

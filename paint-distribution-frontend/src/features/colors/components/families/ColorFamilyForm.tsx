@@ -36,7 +36,7 @@ export function ColorFamilyForm({
   onCancel,
   isSubmitting = false,
 }: ColorFamilyFormProps) {
-  const form = useForm<ColorFamilyFormValues, unknown, ColorFamilyFormValues>({
+  const form = useForm<ColorFamilyFormValues>({
     resolver: zodResolver(colorFamilySchema),
     defaultValues: {
       name: "",
@@ -46,14 +46,16 @@ export function ColorFamilyForm({
     },
   });
 
+  const { reset } = form;
+
   useEffect(() => {
-    form.reset({
+    reset({
       name: initialData?.name ?? "",
       code: initialData?.code ?? "",
       description: initialData?.description ?? "",
       is_active: initialData?.is_active ?? true,
     });
-  }, [initialData, form]);
+  }, [initialData, reset]);
 
   const handleFormSubmit: SubmitHandler<ColorFamilyFormValues> = (values) => {
     onSubmit(values);

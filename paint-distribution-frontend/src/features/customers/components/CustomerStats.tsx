@@ -2,7 +2,7 @@ import { Users, UserRound, Building2, UserCheck, UserX } from "lucide-react";
 
 import type { Customer } from "../types/customer.types";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "../components/ui/card";
 
 interface CustomerStatsProps {
   customers: Customer[];

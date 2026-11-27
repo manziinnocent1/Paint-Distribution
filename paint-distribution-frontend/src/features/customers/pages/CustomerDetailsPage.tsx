@@ -10,7 +10,7 @@ import { CustomerForm } from "../components/CustomerForm";
 
 import type { CustomerFormValues } from "../types/customer.types";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 
 import {
   Dialog,
@@ -18,7 +18,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "../components/ui/dialog";
 
 import { useState } from "react";
 

@@ -10,9 +10,9 @@ import type {
 import { customerAddressSchema } from "../../schemas/customer.schema";
 import { CUSTOMER_ADDRESS_TYPES } from "../../constants/customer.constants";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Switch } from "../../components/ui/switch";
 
 import {
   Form,
@@ -21,7 +21,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "../../components/ui/form";
 
 import {
   Select,
@@ -29,7 +29,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "../../components/ui/select";
 
 interface CustomerAddressFormProps {
   initialData?: CustomerAddress;

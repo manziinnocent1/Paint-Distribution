@@ -2,7 +2,7 @@ import { Plus, MapPin } from "lucide-react";
 
 import type { CustomerAddress } from "../../types/customer.types";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { CustomerAddressCard } from "./CustomerAddressCard";
 
 interface CustomerAddressListProps {

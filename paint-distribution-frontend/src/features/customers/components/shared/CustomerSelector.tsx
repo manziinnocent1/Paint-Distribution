@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { Check, ChevronsUpDown, Search } from "lucide-react";
 
-import { useCustomers } from "../../hooks/useCustomers";
+import { useCustomers } from "../../hooks/useCustomer";
 import type { Customer } from "../../types/customer.types";
 
 import { getCustomerFullName } from "../../utils/customer.utils";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "../../components/ui/popover";
 
 import {
   Command,
@@ -21,7 +21,7 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "../../components/ui/command";
 
 import { CustomerAvatar } from "./CustomerAvatar";
 

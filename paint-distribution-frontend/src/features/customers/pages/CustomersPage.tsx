@@ -8,7 +8,7 @@ import type {
   CustomerFormValues,
 } from "../types/customer.types";
 
-import { useCustomers } from "../hooks/useCustomers";
+import { useCustomers } from "../hooks/useCustomer";
 import { useCustomerMutations } from "../hooks/useCustomerMutations";
 
 import { CUSTOMER_DEFAULT_FILTERS } from "../constants/customer.constants";
@@ -20,8 +20,8 @@ import { CustomerDetails } from "../components/CustomerDetails";
 import { CustomerFilters } from "../components/CustomerFilters";
 import { CustomerStats } from "../components/CustomerStats";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
 
 import {
   Dialog,
@@ -29,7 +29,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "../components/ui/dialog";
 
 export default function CustomersPage() {
   const [filters, setFilters] = useState<CustomerFilterValues>({

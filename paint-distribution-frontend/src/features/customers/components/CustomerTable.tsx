@@ -2,7 +2,7 @@ import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import type { Customer } from "../types/customer.types";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 
 import {
   Table,
@@ -11,14 +11,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../components/ui/table";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "../components/ui/dropdown-menu";
 
 import { CustomerAvatar } from "./shared/CustomerAvatar";
 import { CustomerStatusBadge } from "./shared/CustomerStatusBadge";

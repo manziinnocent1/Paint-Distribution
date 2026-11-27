@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { customerService } from "../services/customerService";
-import { CUSTOMER_QUERY_KEYS } from "./useCustomers";
+import { CUSTOMER_QUERY_KEYS } from "./useCustomer";
 
 export function useCustomerAddresses(customerId?: string) {
   return useQuery({

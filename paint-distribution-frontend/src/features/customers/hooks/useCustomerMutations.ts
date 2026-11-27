@@ -11,7 +11,7 @@ import type {
   CustomerFormValues,
 } from "../types/customer.types";
 
-import { CUSTOMER_QUERY_KEYS } from "./useCustomers";
+import { CUSTOMER_QUERY_KEYS } from "./useCustomer";
 
 export function useCustomerMutations() {
   const queryClient = useQueryClient();

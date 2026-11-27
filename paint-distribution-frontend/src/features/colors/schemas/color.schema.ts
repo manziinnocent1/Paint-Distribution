@@ -1,27 +1,31 @@
-
 import { z } from "zod";
 import { COLOR_HEX_PATTERN } from "../constants/color.constants";
 
 export const colorSchema = z.object({
-  name: z.string().min(2, "Color name must contain at least 2 characters").max(100),
-  code: z.string().min(2, "Color code is required").max(50),
+  name: z
+    .string()
+    .trim()
+    .min(2, "Color name must contain at least 2 characters")
+    .max(100),
+  code: z.string().trim().min(2, "Color code is required").max(50),
   hex_code: z
     .string()
     .regex(COLOR_HEX_PATTERN, "Enter a valid HEX color, e.g. #FFFFFF"),
-  rgb_value: z.string().optional().default(""),
-  description: z.string().max(500).optional().default(""),
-  family: z.string().optional().default(""),
-  is_active: z.boolean().default(true),
+  rgb_value: z.string(),
+  description: z.string().max(500),
+  family: z.string(),
+  is_active: z.boolean(),
 });
 
 export const colorFamilySchema = z.object({
-  name: z.string().min(2, "Family name is required").max(100),
-  code: z.string().min(2, "Family code is required").max(50),
-  description: z.string().max(500).optional().default(""),
-  is_active: z.boolean().default(true),
+  name: z.string().trim().min(2, "Family name is required").max(100),
+  code: z.string().trim().min(2, "Family code is required").max(50),
+  description: z.string().max(500),
+  is_active: z.boolean(),
 });
 
 export const colorFormulaIngredientSchema = z.object({
+  id: z.string().optional(),
   color: z.string().min(1, "Select an ingredient color"),
   color_name: z.string().optional(),
   color_code: z.string().optional(),
@@ -30,32 +34,31 @@ export const colorFormulaIngredientSchema = z.object({
   percentage: z.number().min(0).max(100).optional(),
 });
 
-export const colorFormulaSchema = z.object({
-  name: z.string().min(2, "Formula name is required").max(100),
-  code: z.string().min(2, "Formula code is required").max(50),
-  description: z.string().max(500).optional().default(""),
-  target_color: z.string().min(1, "Select a target color"),
-  ingredients: z
-    .array(colorFormulaIngredientSchema)
-    .min(1, "Add at least one ingredient"),
-  is_active: z.boolean().default(true),
-}).superRefine((data, ctx) => {
-  const quantities = data.ingredients.map((item) => item.quantity);
+export const colorFormulaSchema = z
+  .object({
+    name: z.string().trim().min(2, "Formula name is required").max(100),
+    code: z.string().trim().min(2, "Formula code is required").max(50),
+    description: z.string().max(500),
+    target_color: z.string().min(1, "Select a target color"),
+    ingredients: z
+      .array(colorFormulaIngredientSchema)
+      .min(1, "Add at least one ingredient"),
+    is_active: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    const hasInvalidQuantity = data.ingredients.some(
+      (item) => !Number.isFinite(item.quantity)
+    );
 
-  if (quantities.some((quantity) => !Number.isFinite(quantity))) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Ingredient quantities must be valid numbers",
-      path: ["ingredients"],
-    });
-  }
-});
+    if (hasInvalidQuantity) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Ingredient quantities must be valid numbers",
+        path: ["ingredients"],
+      });
+    }
+  });
 
-export type ColorSchemaInput = z.input<typeof colorSchema>;
-export type ColorSchemaValues = z.output<typeof colorSchema>;
-
-export type ColorFamilySchemaInput = z.input<typeof colorFamilySchema>;
-export type ColorFamilySchemaValues = z.output<typeof colorFamilySchema>;
-
-export type ColorFormulaSchemaInput = z.input<typeof colorFormulaSchema>;
-export type ColorFormulaSchemaValues = z.output<typeof colorFormulaSchema>;
+export type ColorSchemaValues = z.infer<typeof colorSchema>;
+export type ColorFamilySchemaValues = z.infer<typeof colorFamilySchema>;
+export type ColorFormulaSchemaValues = z.infer<typeof colorFormulaSchema>;
